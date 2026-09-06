@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <title>Brett - 3D Photos</title>
+  <link rel="stylesheet" href="../viewer.css">
+</head>
+<body>
+  <section id="landing" class="screen active" aria-labelledby="landingName">
+    <div class="landing-card">
+      <h1 id="landingName">Brett</h1>
+      <p id="landingText">These are stereoscopic 3D photos.</p>
+      <p>For best results, rotate your phone to landscape orientation before viewing.</p>
+      <button id="viewBtn" class="primary" type="button">View Photos</button>
+    </div>
+  </section>
+
+  <section id="viewer" class="screen" aria-label="3D photo viewer">
+    <div class="viewer-main">
+      <img id="photo" src="" alt="">
+    </div>
+
+    <div id="controls" class="controls">
+      <button id="backBtn" class="control-button" type="button" aria-label="Back to introduction">Home</button>
+
+      <div class="meta" aria-live="polite">
+        <span id="title"></span>
+        <span aria-hidden="true"> · </span>
+        <span id="counter"></span>
+      </div>
+
+      <div>
+        <button id="prevBtn" class="control-button" type="button" aria-label="Previous photo">‹</button>
+        <button id="nextBtn" class="control-button" type="button" aria-label="Next photo">›</button>
+      </div>
+    </div>
+  </section>
+
+  <script src="config.js"></script>
+  <script src="../viewer.js"></script>
+</body>
+</html>
