@@ -1,20 +1,12 @@
-PHONE 3D VIEWER
+BOBK 3D PHONE VIEWER V2
+Replace the existing phone folder in GitHub with this phone folder.
 
-Upload the entire "phone" folder into the root of the bobk.com GitHub repository.
-
-Expected URL:
-  https://bobk.com/phone/Brett/
-
-To make another gallery:
-1. Copy phone/Brett to phone/NewName
-2. Replace the JPEGs
-3. Edit phone/NewName/config.js
-4. Edit the <title> in phone/NewName/index.html if desired
-
-Shared files:
-  phone/viewer.css
-  phone/viewer.js
-
-Any change to those shared files affects every gallery.
-
-Update test
+Changes:
+- 3D Viewer / Cross View launch choices
+- 7-second automatic slideshow
+- stereo filename title for first 2 seconds of each image
+- swipe navigation resets timer
+- tap image pauses/resumes
+- bottom Home/Pause/title/count/previous/next controls
+- requests fullscreen where the browser permits it
+- shared viewer.css/viewer.js for future galleries
