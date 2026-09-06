@@ -16,3 +16,5 @@ Shared files:
   phone/viewer.js
 
 Any change to those shared files affects every gallery.
+
+Update test
