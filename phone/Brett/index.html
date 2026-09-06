@@ -1,34 +1,5 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#000000">
-<title>Brett - 3D Photos</title>
-<link rel="stylesheet" href="../viewer.css">
-</head>
-<body>
-<section id="landing" class="screen active">
-  <div class="landing-card">
-    <h1 id="landingName">Brett</h1>
-    <p id="landingText"></p>
-    <p>For best results, rotate your phone to landscape orientation before viewing.</p>
-    <button id="viewBtn" class="primary" type="button">View Photos</button>
-  </div>
-</section>
-<section id="viewer" class="screen">
-  <div class="viewer-main"><img id="photo" src="" alt=""></div>
-  <div class="controls">
-    <button id="backBtn" class="control-button" type="button">Home</button>
-    <button id="pauseBtn" class="control-button" type="button">Pause</button>
-    <div class="meta"><span id="title"></span> · <span id="counter"></span></div>
-    <div class="nav-buttons">
-      <button id="prevBtn" class="control-button" type="button">‹</button>
-      <button id="nextBtn" class="control-button" type="button">›</button>
-    </div>
-  </div>
-</section>
-<script src="config.js"></script>
-<script src="../viewer.js"></script>
-</body>
-</html>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#000"><meta name="apple-mobile-web-app-capable" content="yes"><title>Brett - 3D Photos</title><link rel="stylesheet" href="../viewer.css"></head><body>
+<section id="landing" class="screen active"><div class="card"><h1>Brett</h1><p>Stereoscopic 3D photographs. Turn your phone sideways before viewing.</p><p>For a lensed viewer such as the Loreo Lite, choose <b>3D Viewer</b>. If you view stereograms by crossing your eyes, choose <b>Cross View</b>.</p><p>Photos advance every 7 seconds.
+Swipe anytime to move manually; tap the picture to pause or resume.</p><div class="modes"><button id="parallel" class="primary">3D Viewer</button><button id="crossBtn" class="primary">Cross View</button></div></div></section>
+<section id="viewer" class="screen"><div id="stage" class="stage"><img id="photo" class="normal" alt=""><div id="cross" class="cross"><div id="leftHalf" class="half a"></div><div id="rightHalf" class="half b"></div></div><div id="status" class="status"></div></div><div class="controls"><button id="home">Home</button><button id="pause">Pause</button><div class="meta"><b id="metaTitle"></b> · <span id="count"></span></div><button id="prev">‹</button><button id="next">›</button></div></section>
+<script src="config.js"></script><script src="../viewer.js"></script></body></html>
