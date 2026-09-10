@@ -1,8 +1,10 @@
 <!DOCTYPE html>
+<!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
 <title>BobK Gallery Updater</title>
 <style>
 body {
@@ -120,39 +122,54 @@ input[type="file"] {
 </style>
 </head>
 <body>
-
 <h1>BobK Gallery Updater</h1>
 <div class="note">
 Choose the image position you want to replace, then select the new image.
 </div>
-
-<div id="slotGrid" class="slot-grid"></div>
-
+<div class="slot-grid" id="slotGrid"></div>
 <div id="formPanel">
-    <div id="selectedSlot" style="font-weight:bold;"></div>
-
-    <label for="currentFile">Current image</label>
-    <input id="currentFile" type="text" readonly>
-
-    <label for="newImage">Replacement image</label>
-    <input id="newImage" type="file" accept="image/jpeg,image/png,image/webp">
-
-    <div class="preview-row">
-        <div class="preview-box">
-            <strong>Current</strong>
-            <img id="currentPreview" alt="">
-        </div>
-        <div class="preview-box">
-            <strong>Replacement</strong>
-            <img id="newPreview" alt="">
-        </div>
-    </div>
-
-    <button id="submitButton" type="button" disabled>Update Image</button>
-
-    <div id="status"></div>
+<div id="selectedSlot" style="font-weight:bold;"></div>
+<label for="currentFile">Current image</label>
+<input id="currentFile" readonly="" type="text"/>
+<label for="titleField">Title (optional)</label>
+<input id="titleField" maxlength="200" placeholder="Leave blank for no title" type="text"/>
+<label>Replacement source</label>
+<div style="margin-bottom:8px;">
+<label style="display:inline;font-weight:normal;margin-right:18px;">
+<input checked="" name="sourceMode" type="radio" value="upload"/>
+    Upload new image
+  </label>
+<label style="display:inline;font-weight:normal;">
+<input name="sourceMode" type="radio" value="existing"/>
+    Choose existing image
+  </label>
 </div>
-
+<div id="uploadPanel">
+<label for="newImage">Replacement image</label>
+<input accept="image/jpeg,image/png,image/webp" id="newImage" type="file"/>
+</div>
+<div id="existingPanel" style="display:none;">
+<label for="existingImage">Existing image</label>
+<select id="existingImage" style="width:100%;max-width:680px;padding:7px;">
+<option value="">Worker not connected yet</option>
+</select>
+<div class="note" style="margin-top:6px;margin-bottom:0;">
+    Once connected, this list will come from the repo's images/ folder.
+  </div>
+</div>
+<div class="preview-row">
+<div class="preview-box">
+<strong>Current</strong>
+<img alt="" id="currentPreview"/>
+</div>
+<div class="preview-box">
+<strong>Replacement</strong>
+<img alt="" id="newPreview"/>
+</div>
+</div>
+<button id="submitButton" type="button">Update Image</button>
+<div id="status"></div>
+</div>
 <script>
 // We will replace this with the real Worker address once the Worker is created.
 const workerUrl = "";
@@ -165,13 +182,33 @@ const formPanel = document.getElementById("formPanel");
 const selectedSlot = document.getElementById("selectedSlot");
 const currentFile = document.getElementById("currentFile");
 const currentPreview = document.getElementById("currentPreview");
+const titleField = document.getElementById("titleField");
 const newImage = document.getElementById("newImage");
+const existingImage = document.getElementById("existingImage");
+const uploadPanel = document.getElementById("uploadPanel");
+const existingPanel = document.getElementById("existingPanel");
 const newPreview = document.getElementById("newPreview");
 const submitButton = document.getElementById("submitButton");
 const status = document.getElementById("status");
+const sourceModes = document.querySelectorAll('input[name="sourceMode"]');
 
 function filenameOnly(path) {
     return path.split("/").pop();
+}
+
+function selectedMode() {
+    return document.querySelector('input[name="sourceMode"]:checked').value;
+}
+
+function setReplacementPreview() {
+    newPreview.removeAttribute("src");
+
+    if (selectedMode() === "upload") {
+        const file = newImage.files[0];
+        if (file) newPreview.src = URL.createObjectURL(file);
+    } else {
+        if (existingImage.value) newPreview.src = existingImage.value;
+    }
 }
 
 function selectSlot(index) {
@@ -188,10 +225,11 @@ function selectSlot(index) {
 
     currentFile.value = item.src;
     currentPreview.src = item.src;
+    titleField.value = item.title || "";
 
     newImage.value = "";
+    existingImage.value = "";
     newPreview.removeAttribute("src");
-    submitButton.disabled = true;
 
     status.style.display = "none";
     formPanel.style.display = "block";
@@ -210,7 +248,7 @@ function buildSlots(config) {
 
         const img = document.createElement("img");
         img.src = item.src;
-        img.alt = "";
+        img.alt = item.title || "";
 
         const label = document.createElement("div");
         label.className = "slot-label";
@@ -223,48 +261,61 @@ function buildSlots(config) {
         slot.appendChild(img);
         slot.appendChild(label);
         slot.appendChild(file);
-
         slotGrid.appendChild(slot);
     });
 }
 
-newImage.addEventListener("change", function() {
-    status.style.display = "none";
-
-    const file = this.files[0];
-
-    if (!file) {
-        newPreview.removeAttribute("src");
-        submitButton.disabled = true;
-        return;
-    }
-
-    const objectUrl = URL.createObjectURL(file);
-    newPreview.src = objectUrl;
-    submitButton.disabled = false;
+sourceModes.forEach(function(radio) {
+    radio.addEventListener("change", function() {
+        const upload = selectedMode() === "upload";
+        uploadPanel.style.display = upload ? "block" : "none";
+        existingPanel.style.display = upload ? "none" : "block";
+        setReplacementPreview();
+    });
 });
 
-submitButton.addEventListener("click", async function() {
-    if (selectedIndex < 0 || !newImage.files[0]) {
-        return;
-    }
+newImage.addEventListener("change", setReplacementPreview);
+existingImage.addEventListener("change", setReplacementPreview);
 
+submitButton.addEventListener("click", async function() {
+    if (selectedIndex < 0) return;
+
+    const mode = selectedMode();
+    const hasUpload = !!newImage.files[0];
+    const hasExisting = !!existingImage.value;
+
+    // Allow a title-only update as well.
     if (!workerUrl) {
         status.style.display = "block";
         status.textContent =
 `The updater page is working.
 
 Selected: Image ${selectedIndex + 1}
-New file: ${newImage.files[0].name}
+Title: ${titleField.value || "(blank)"}
+Replacement source: ${mode}
+Replacement: ${
+    mode === "upload"
+        ? (hasUpload ? newImage.files[0].name : "(no new image selected)")
+        : (hasExisting ? existingImage.value : "(no existing image selected)")
+}
 
 The Worker is not connected yet, so nothing has been changed on GitHub.`;
         return;
     }
 
-    // This is the format the Worker will accept in the next step.
     const formData = new FormData();
     formData.append("slot", String(selectedIndex + 1));
-    formData.append("image", newImage.files[0]);
+    formData.append("title", titleField.value);
+
+    if (mode === "upload" && hasUpload) {
+        formData.append("image", newImage.files[0]);
+        formData.append("sourceMode", "upload");
+    } else if (mode === "existing" && hasExisting) {
+        formData.append("existingPath", existingImage.value);
+        formData.append("sourceMode", "existing");
+    } else {
+        formData.append("sourceMode", "title-only");
+    }
 
     submitButton.disabled = true;
     submitButton.textContent = "Updating...";
@@ -288,18 +339,10 @@ The Worker is not connected yet, so nothing has been changed on GitHub.`;
 `Success.
 
 Image ${selectedIndex + 1} updated.
-New file: ${data.filename || newImage.files[0].name}
-Commit: ${data.commit || "not returned"}
-
 GitHub has been updated. Cloudflare should redeploy shortly.`;
 
     } catch (error) {
-        status.textContent =
-`Update failed.
-
-${error.message}
-
-Nothing else was attempted automatically.`;
+        status.textContent = "Update failed.\n\n" + error.message;
     } finally {
         submitButton.disabled = false;
         submitButton.textContent = "Update Image";
@@ -308,9 +351,7 @@ Nothing else was attempted automatically.`;
 
 fetch("gallery.json", { cache: "no-store" })
     .then(function(response) {
-        if (!response.ok) {
-            throw new Error("HTTP " + response.status);
-        }
+        if (!response.ok) throw new Error("HTTP " + response.status);
         return response.json();
     })
     .then(function(config) {
@@ -322,6 +363,5 @@ fetch("gallery.json", { cache: "no-store" })
         console.error(error);
     });
 </script>
-
 </body>
 </html>

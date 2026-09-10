@@ -2,63 +2,78 @@
   "images": [
     {
       "id": "image01",
-      "src": "images/DSCF2062.jpg"
+      "src": "images/DSCF2062.jpg",
+      "title": ""
     },
     {
       "id": "image02",
-      "src": "images/RKXH7469.jpg"
+      "src": "images/RKXH7469.jpg",
+      "title": ""
     },
     {
       "id": "image03",
-      "src": "images/IMG_0118-1.jpg"
+      "src": "images/IMG_0118-1.jpg",
+      "title": ""
     },
     {
       "id": "image04",
-      "src": "images/RKXH6529.jpg"
+      "src": "images/RKXH6529.jpg",
+      "title": ""
     },
     {
       "id": "image05",
-      "src": "images/RKXH8408.jpg"
+      "src": "images/RKXH8408.jpg",
+      "title": ""
     },
     {
       "id": "image06",
-      "src": "images/RKXH6755.jpg"
+      "src": "images/RKXH6755.jpg",
+      "title": ""
     },
     {
       "id": "image07",
-      "src": "images/RKXW1018-1.jpg"
+      "src": "images/RKXW1018-1.jpg",
+      "title": ""
     },
     {
       "id": "image08",
-      "src": "images/_DSF3705.jpg"
+      "src": "images/_DSF3705.jpg",
+      "title": ""
     },
     {
       "id": "image09",
-      "src": "images/BOBK8698.jpg"
+      "src": "images/BOBK8698.jpg",
+      "title": ""
     },
     {
       "id": "image10",
-      "src": "images/_MG_8473-2.jpg"
+      "src": "images/_MG_8473-2.jpg",
+      "title": ""
     },
     {
       "id": "image11",
-      "src": "images/RKXW0459.jpg"
+      "src": "images/RKXW0459.jpg",
+      "title": ""
     },
     {
       "id": "image12",
-      "src": "images/07090534.jpg"
+      "src": "images/07090534.jpg",
+      "title": ""
     },
     {
       "id": "image13",
-      "src": "images/OBK1052-Edit-1052.jpg"
+      "src": "images/OBK1052-Edit-1052.jpg",
+      "title": ""
     },
     {
       "id": "image14",
-      "src": "images/RKXT1268-2.jpg"
+      "src": "images/RKXT1268-2.jpg",
+      "title": ""
     },
     {
       "id": "image15",
-      "src": "images/RKXT1380.jpg"
+      "src": "images/RKXT1380.jpg",
+      "title": ""
     }
   ]
 }
