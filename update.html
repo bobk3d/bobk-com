@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BobK Gallery Updater</title>
+<style>
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 24px;
+    max-width: 920px;
+    color: #111;
+}
+h1 {
+    margin-bottom: 6px;
+}
+.note {
+    font-size: 0.92em;
+    color: #444;
+    margin-bottom: 24px;
+}
+.slot-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 28px;
+}
+.slot {
+    border: 1px solid #bbb;
+    padding: 10px;
+    cursor: pointer;
+    background: #fff;
+}
+.slot:hover {
+    background: #f4f4f4;
+}
+.slot.selected {
+    outline: 3px solid #555;
+}
+.slot img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    background: #ddd;
+}
+.slot-label {
+    font-weight: bold;
+    margin-top: 8px;
+}
+.slot-file {
+    font-size: 0.82em;
+    color: #555;
+    overflow-wrap: anywhere;
+    margin-top: 3px;
+}
+#formPanel {
+    display: none;
+    border-top: 1px solid #bbb;
+    padding-top: 20px;
+}
+label {
+    display: block;
+    margin-top: 14px;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+input[type="text"],
+input[type="file"] {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 680px;
+    padding: 7px;
+}
+.preview-row {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+}
+.preview-box {
+    width: 220px;
+}
+.preview-box strong {
+    display: block;
+    margin-bottom: 6px;
+}
+.preview-box img {
+    display: block;
+    width: 220px;
+    height: 275px;
+    object-fit: cover;
+    background: #ddd;
+    border: 1px solid #bbb;
+}
+#submitButton {
+    margin-top: 20px;
+    padding: 8px 16px;
+}
+#status {
+    display: none;
+    margin-top: 20px;
+    padding: 12px;
+    background: #f3f3f3;
+    white-space: pre-wrap;
+}
+@media (max-width: 700px) {
+    .slot-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (max-width: 440px) {
+    body {
+        margin: 16px;
+    }
+    .slot-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+</head>
+<body>
+
+<h1>BobK Gallery Updater</h1>
+<div class="note">
+Choose the image position you want to replace, then select the new image.
+</div>
+
+<div id="slotGrid" class="slot-grid"></div>
+
+<div id="formPanel">
+    <div id="selectedSlot" style="font-weight:bold;"></div>
+
+    <label for="currentFile">Current image</label>
+    <input id="currentFile" type="text" readonly>
+
+    <label for="newImage">Replacement image</label>
+    <input id="newImage" type="file" accept="image/jpeg,image/png,image/webp">
+
+    <div class="preview-row">
+        <div class="preview-box">
+            <strong>Current</strong>
+            <img id="currentPreview" alt="">
+        </div>
+        <div class="preview-box">
+            <strong>Replacement</strong>
+            <img id="newPreview" alt="">
+        </div>
+    </div>
+
+    <button id="submitButton" type="button" disabled>Update Image</button>
+
+    <div id="status"></div>
+</div>
+
+<script>
+// We will replace this with the real Worker address once the Worker is created.
+const workerUrl = "";
+
+let galleryData = null;
+let selectedIndex = -1;
+
+const slotGrid = document.getElementById("slotGrid");
+const formPanel = document.getElementById("formPanel");
+const selectedSlot = document.getElementById("selectedSlot");
+const currentFile = document.getElementById("currentFile");
+const currentPreview = document.getElementById("currentPreview");
+const newImage = document.getElementById("newImage");
+const newPreview = document.getElementById("newPreview");
+const submitButton = document.getElementById("submitButton");
+const status = document.getElementById("status");
+
+function filenameOnly(path) {
+    return path.split("/").pop();
+}
+
+function selectSlot(index) {
+    selectedIndex = index;
+
+    document.querySelectorAll(".slot").forEach(function(slot, i) {
+        slot.classList.toggle("selected", i === index);
+    });
+
+    const item = galleryData.images[index];
+
+    selectedSlot.textContent =
+        "Updating: Image " + (index + 1) + " (" + item.id + ")";
+
+    currentFile.value = item.src;
+    currentPreview.src = item.src;
+
+    newImage.value = "";
+    newPreview.removeAttribute("src");
+    submitButton.disabled = true;
+
+    status.style.display = "none";
+    formPanel.style.display = "block";
+    formPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function buildSlots(config) {
+    slotGrid.innerHTML = "";
+
+    config.images.forEach(function(item, index) {
+        const slot = document.createElement("div");
+        slot.className = "slot";
+        slot.addEventListener("click", function() {
+            selectSlot(index);
+        });
+
+        const img = document.createElement("img");
+        img.src = item.src;
+        img.alt = "";
+
+        const label = document.createElement("div");
+        label.className = "slot-label";
+        label.textContent = "Image " + (index + 1);
+
+        const file = document.createElement("div");
+        file.className = "slot-file";
+        file.textContent = filenameOnly(item.src);
+
+        slot.appendChild(img);
+        slot.appendChild(label);
+        slot.appendChild(file);
+
+        slotGrid.appendChild(slot);
+    });
+}
+
+newImage.addEventListener("change", function() {
+    status.style.display = "none";
+
+    const file = this.files[0];
+
+    if (!file) {
+        newPreview.removeAttribute("src");
+        submitButton.disabled = true;
+        return;
+    }
+
+    const objectUrl = URL.createObjectURL(file);
+    newPreview.src = objectUrl;
+    submitButton.disabled = false;
+});
+
+submitButton.addEventListener("click", async function() {
+    if (selectedIndex < 0 || !newImage.files[0]) {
+        return;
+    }
+
+    if (!workerUrl) {
+        status.style.display = "block";
+        status.textContent =
+`The updater page is working.
+
+Selected: Image ${selectedIndex + 1}
+New file: ${newImage.files[0].name}
+
+The Worker is not connected yet, so nothing has been changed on GitHub.`;
+        return;
+    }
+
+    // This is the format the Worker will accept in the next step.
+    const formData = new FormData();
+    formData.append("slot", String(selectedIndex + 1));
+    formData.append("image", newImage.files[0]);
+
+    submitButton.disabled = true;
+    submitButton.textContent = "Updating...";
+    status.style.display = "block";
+    status.textContent = "Sending update to Worker...";
+
+    try {
+        const response = await fetch(workerUrl, {
+            method: "POST",
+            credentials: "include",
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.ok) {
+            throw new Error(data.error || ("HTTP " + response.status));
+        }
+
+        status.textContent =
+`Success.
+
+Image ${selectedIndex + 1} updated.
+New file: ${data.filename || newImage.files[0].name}
+Commit: ${data.commit || "not returned"}
+
+GitHub has been updated. Cloudflare should redeploy shortly.`;
+
+    } catch (error) {
+        status.textContent =
+`Update failed.
+
+${error.message}
+
+Nothing else was attempted automatically.`;
+    } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = "Update Image";
+    }
+});
+
+fetch("gallery.json", { cache: "no-store" })
+    .then(function(response) {
+        if (!response.ok) {
+            throw new Error("HTTP " + response.status);
+        }
+        return response.json();
+    })
+    .then(function(config) {
+        galleryData = config;
+        buildSlots(config);
+    })
+    .catch(function(error) {
+        slotGrid.textContent = "Could not load gallery.json.";
+        console.error(error);
+    });
+</script>
+
+</body>
+</html>
