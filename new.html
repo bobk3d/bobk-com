@@ -21,21 +21,21 @@
     }
 
     main {
-      width: min(1200px, calc(100% - 32px));
+      width: min(1160px, calc(100% - 80px));
       margin: 0 auto;
-      padding: 30px 0 40px;
+      padding: 24px 0 40px;
     }
 
     h1 {
       margin: 0 0 24px;
-      font-size: 2rem;
-      font-weight: 700;
+      font-size: 3.75rem;
+      font-weight: 400;
     }
 
     .gallery {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 0;
+      gap: 20px;
     }
 
     .gallery-item {
@@ -43,6 +43,7 @@
       aspect-ratio: 4 / 3;
       overflow: hidden;
       background: #ddd;
+      cursor: pointer;
     }
 
     .gallery-item img {
@@ -54,17 +55,18 @@
 
     @media (max-width: 760px) {
       main {
-        width: 100%;
+        width: calc(100% - 32px);
         padding-top: 18px;
       }
 
       h1 {
-        margin: 0 16px 18px;
-        font-size: 1.6rem;
+        margin-bottom: 18px;
+        font-size: 2.4rem;
       }
 
       .gallery {
         grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
       }
     }
 
@@ -72,6 +74,31 @@
       .gallery {
         grid-template-columns: 1fr;
       }
+    }
+
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(0, 0, 0, 0.92);
+      z-index: 1000;
+      cursor: zoom-out;
+    }
+
+    .lightbox.open {
+      display: flex;
+    }
+
+    .lightbox img {
+      max-width: 96vw;
+      max-height: 94vh;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      box-shadow: 0 0 24px rgba(0,0,0,.35);
     }
   </style>
 </head>
@@ -127,5 +154,39 @@
         </figure>
     </div>
   </main>
+
+  <div class="lightbox" id="lightbox" aria-hidden="true">
+    <img id="lightboxImage" src="" alt="">
+  </div>
+
+  <script>
+    (function () {
+      var lightbox = document.getElementById("lightbox");
+      var lightboxImage = document.getElementById("lightboxImage");
+
+      document.querySelectorAll(".gallery-item img").forEach(function (img) {
+        img.addEventListener("click", function () {
+          lightboxImage.src = img.src;
+          lightbox.classList.add("open");
+          lightbox.setAttribute("aria-hidden", "false");
+        });
+      });
+
+      function closeLightbox() {
+        lightbox.classList.remove("open");
+        lightbox.setAttribute("aria-hidden", "true");
+        lightboxImage.src = "";
+      }
+
+      lightbox.addEventListener("click", closeLightbox);
+
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+          closeLightbox();
+        }
+      });
+    }());
+  </script>
+
 </body>
 </html>
