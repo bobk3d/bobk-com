@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bob Karambelas</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #fff;
+      color: #111;
+    }
+
+    main {
+      width: min(1200px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 30px 0 40px;
+    }
+
+    h1 {
+      margin: 0 0 24px;
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+    }
+
+    .gallery-item {
+      margin: 0;
+      aspect-ratio: 4 / 3;
+      overflow: hidden;
+      background: #ddd;
+    }
+
+    .gallery-item img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    @media (max-width: 760px) {
+      main {
+        width: 100%;
+        padding-top: 18px;
+      }
+
+      h1 {
+        margin: 0 16px 18px;
+        font-size: 1.6rem;
+      }
+
+      .gallery {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .gallery {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Bob Karambelas</h1>
+
+    <div class="gallery" id="gallery">
+        <figure class="gallery-item" id="image01">
+          <img src="images/DSCF2062.jpg" alt="" loading="lazy">
+        </figure>
+        <figure class="gallery-item" id="image02">
+          <img src="images/RKXH7469.jpg" alt="" loading="lazy">
+        </figure>
+        <figure class="gallery-item" id="image03">
+          <img src="images/IMG_0118-1.jpg" alt="" loading="lazy">
+        </figure>
+        <figure class="gallery-item" id="image04">
+          <img src="images/RKXH6529.jpg" alt="" loading="lazy">
+        </figure>
+        <figure class="gallery-item" id="image05">
+          <img src="images/RKXH8408.jpg" alt="" loading="lazy">
+        </figure>
+        <figure class="gallery-item" id="image06">
+          <img src="images/RKXH6755.jpg" alt="" loading="lazy">
+        </figure>
+        <figure class="gallery-item" id="image07">
+          <img src="images/RKXW1018-1.jpg" alt="" loading="lazy">
+        </figure>
+        <figure class="gallery-item" id="image08">
+          <img src="images/_DSF3705.jpg" alt="" loading="lazy">
+        </figure>
+        <figure class="gallery-item" id="image09">
+          <img src="images/BOBK8698.jpg" alt="" loading="lazy">
+        </figure>
+        <figure class="gallery-item" id="image10">
+          <img src="images/_MG_8473-2.jpg" alt="" loading="lazy">
+        </figure>
+        <figure class="gallery-item" id="image11">
+          <img src="images/RKXW0459.jpg" alt="" loading="lazy">
+        </figure>
+        <figure class="gallery-item" id="image12">
+          <img src="images/07090534.jpg" alt="" loading="lazy">
+        </figure>
+        <figure class="gallery-item" id="image13">
+          <img src="images/OBK1052-Edit-1052.jpg" alt="" loading="lazy">
+        </figure>
+        <figure class="gallery-item" id="image14">
+          <img src="images/RKXT1268-2.jpg" alt="" loading="lazy">
+        </figure>
+        <figure class="gallery-item" id="image15">
+          <img src="images/RKXT1380.jpg" alt="" loading="lazy">
+        </figure>
+    </div>
+  </main>
+</body>
+</html>
