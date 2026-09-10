@@ -1,6 +1,4 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
@@ -151,7 +149,7 @@ Choose the image position you want to replace, then select the new image.
 <div id="existingPanel" style="display:none;">
 <label for="existingImage">Existing image</label>
 <select id="existingImage" style="width:100%;max-width:680px;padding:7px;">
-<option value="">Worker not connected yet</option>
+<option value="">Loading image list...</option>
 </select>
 <div class="note" style="margin-top:6px;margin-bottom:0;">
     Once connected, this list will come from the repo's images/ folder.
@@ -172,7 +170,7 @@ Choose the image position you want to replace, then select the new image.
 </div>
 <script>
 // We will replace this with the real Worker address once the Worker is created.
-const workerUrl = "";
+const workerUrl = "https://bobk-com-gallery-updater.karambelas.workers.dev";
 
 let galleryData = null;
 let selectedIndex = -1;
@@ -263,6 +261,40 @@ function buildSlots(config) {
         slot.appendChild(file);
         slotGrid.appendChild(slot);
     });
+}
+
+
+async function loadExistingImages() {
+    existingImage.innerHTML = '<option value="">Loading image list...</option>';
+
+    try {
+        const response = await fetch(workerUrl, {
+            method: "GET",
+            credentials: "include"
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.ok) {
+            throw new Error(data.error || ("HTTP " + response.status));
+        }
+
+        existingImage.innerHTML =
+            '<option value="">Select an existing image...</option>';
+
+        data.images.forEach(function(item) {
+            const option = document.createElement("option");
+            option.value = item.path;
+            option.textContent = item.name;
+            existingImage.appendChild(option);
+        });
+
+    } catch (error) {
+        existingImage.innerHTML =
+            '<option value="">Could not load image list</option>';
+
+        console.error(error);
+    }
 }
 
 sourceModes.forEach(function(radio) {
@@ -357,6 +389,7 @@ fetch("gallery.json", { cache: "no-store" })
     .then(function(config) {
         galleryData = config;
         buildSlots(config);
+        loadExistingImages();
     })
     .catch(function(error) {
         slotGrid.textContent = "Could not load gallery.json.";
