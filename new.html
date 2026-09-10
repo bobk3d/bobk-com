@@ -106,35 +106,62 @@
       top: 50%;
       transform: translateY(-50%);
       border: 0;
-      background: rgba(0, 0, 0, 0.35);
-      color: #fff;
-      font-size: 3rem;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.82);
+      font-size: 2rem;
       line-height: 1;
-      width: 58px;
-      height: 72px;
+      width: 36px;
+      height: 48px;
       cursor: pointer;
       z-index: 1001;
       user-select: none;
+      padding: 0;
     }
 
     .lightbox-button:hover {
-      background: rgba(0, 0, 0, 0.55);
+      color: #fff;
     }
 
     .lightbox-prev {
-      left: 16px;
+      left: 14px;
     }
 
     .lightbox-next {
-      right: 16px;
+      right: 14px;
+    }
+
+    .lightbox-counter {
+      position: fixed;
+      top: 18px;
+      left: 18px;
+      z-index: 1001;
+      color: rgba(255, 255, 255, 0.82);
+      font-size: 1rem;
+      line-height: 1;
+      user-select: none;
     }
 
     @media (max-width: 600px) {
       .lightbox-button {
-        width: 46px;
-        height: 60px;
-        font-size: 2.4rem;
+        width: 32px;
+        height: 44px;
+        font-size: 1.8rem;
       }
+
+      .lightbox-prev {
+        left: 6px;
+      }
+
+      .lightbox-next {
+        right: 6px;
+      }
+
+      .lightbox-counter {
+        top: 14px;
+        left: 14px;
+        font-size: 0.95rem;
+      }
+    }
 
       .lightbox-prev {
         left: 6px;
@@ -201,9 +228,10 @@
   </main>
 
   <div class="lightbox" id="lightbox" aria-hidden="true">
-    <button class="lightbox-button lightbox-prev" id="lightboxPrev" aria-label="Previous image">&#10094;</button>
+    <div class="lightbox-counter" id="lightboxCounter">1 / 15</div>
+    <button class="lightbox-button lightbox-prev" id="lightboxPrev" aria-label="Previous image">&#8592;</button>
     <img id="lightboxImage" src="" alt="">
-    <button class="lightbox-button lightbox-next" id="lightboxNext" aria-label="Next image">&#10095;</button>
+    <button class="lightbox-button lightbox-next" id="lightboxNext" aria-label="Next image">&#8594;</button>
   </div>
 
   <script>
@@ -212,6 +240,7 @@
       var lightboxImage = document.getElementById("lightboxImage");
       var prevButton = document.getElementById("lightboxPrev");
       var nextButton = document.getElementById("lightboxNext");
+      var counter = document.getElementById("lightboxCounter");
       var images = Array.prototype.slice.call(
         document.querySelectorAll(".gallery-item img")
       );
@@ -220,6 +249,7 @@
       function showImage(index) {
         currentIndex = (index + images.length) % images.length;
         lightboxImage.src = images[currentIndex].src;
+        counter.textContent = (currentIndex + 1) + " / " + images.length;
       }
 
       function openLightbox(index) {
