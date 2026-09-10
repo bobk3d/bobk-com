@@ -1,10 +1,12 @@
 <!DOCTYPE html>
+<!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>BobK</title>
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>BobK</title>
+<style>
     * {
       box-sizing: border-box;
     }
@@ -175,75 +177,25 @@
   </style>
 </head>
 <body>
-  <main>
-    <h1>Bob Karambelas</h1>
-
-    <div class="gallery" id="gallery">
-        <figure class="gallery-item" id="image01">
-          <img src="images/DSCF2062.jpg" alt="" loading="lazy">
-        </figure>
-        <figure class="gallery-item" id="image02">
-          <img src="images/RKXH7469.jpg" alt="" loading="lazy">
-        </figure>
-        <figure class="gallery-item" id="image03">
-          <img src="images/IMG_0118-1.jpg" alt="" loading="lazy">
-        </figure>
-        <figure class="gallery-item" id="image04">
-          <img src="images/RKXH6529.jpg" alt="" loading="lazy">
-        </figure>
-        <figure class="gallery-item" id="image05">
-          <img src="images/RKXH8408.jpg" alt="" loading="lazy">
-        </figure>
-        <figure class="gallery-item" id="image06">
-          <img src="images/RKXH6755.jpg" alt="" loading="lazy">
-        </figure>
-        <figure class="gallery-item" id="image07">
-          <img src="images/RKXW1018-1.jpg" alt="" loading="lazy">
-        </figure>
-        <figure class="gallery-item" id="image08">
-          <img src="images/_DSF3705.jpg" alt="" loading="lazy">
-        </figure>
-        <figure class="gallery-item" id="image09">
-          <img src="images/BOBK8698.jpg" alt="" loading="lazy">
-        </figure>
-        <figure class="gallery-item" id="image10">
-          <img src="images/_MG_8473-2.jpg" alt="" loading="lazy">
-        </figure>
-        <figure class="gallery-item" id="image11">
-          <img src="images/RKXW0459.jpg" alt="" loading="lazy">
-        </figure>
-        <figure class="gallery-item" id="image12">
-          <img src="images/07090534.jpg" alt="" loading="lazy">
-        </figure>
-        <figure class="gallery-item" id="image13">
-          <img src="images/OBK1052-Edit-1052.jpg" alt="" loading="lazy">
-        </figure>
-        <figure class="gallery-item" id="image14">
-          <img src="images/RKXT1268-2.jpg" alt="" loading="lazy">
-        </figure>
-        <figure class="gallery-item" id="image15">
-          <img src="images/RKXT1380.jpg" alt="" loading="lazy">
-        </figure>
-    </div>
-  </main>
-
-  <div class="lightbox" id="lightbox" aria-hidden="true">
-    <div class="lightbox-counter" id="lightboxCounter">1 / 15</div>
-    <button class="lightbox-button lightbox-prev" id="lightboxPrev" aria-label="Previous image">&#8592;</button>
-    <img id="lightboxImage" src="" alt="">
-    <button class="lightbox-button lightbox-next" id="lightboxNext" aria-label="Next image">&#8594;</button>
-  </div>
-
-  <script>
+<main>
+<h1>Bob Karambelas</h1>
+<div class="gallery" id="gallery"></div>
+</main>
+<div aria-hidden="true" class="lightbox" id="lightbox">
+<div class="lightbox-counter" id="lightboxCounter">1 / 15</div>
+<button aria-label="Previous image" class="lightbox-button lightbox-prev" id="lightboxPrev">←</button>
+<img alt="" id="lightboxImage" src=""/>
+<button aria-label="Next image" class="lightbox-button lightbox-next" id="lightboxNext">→</button>
+</div>
+<script>
     (function () {
+      var gallery = document.getElementById("gallery");
       var lightbox = document.getElementById("lightbox");
       var lightboxImage = document.getElementById("lightboxImage");
       var prevButton = document.getElementById("lightboxPrev");
       var nextButton = document.getElementById("lightboxNext");
       var counter = document.getElementById("lightboxCounter");
-      var images = Array.prototype.slice.call(
-        document.querySelectorAll(".gallery-item img")
-      );
+      var images = [];
       var currentIndex = 0;
 
       function showImage(index) {
@@ -264,20 +216,40 @@
         lightboxImage.src = "";
       }
 
-      images.forEach(function (img, index) {
-        img.addEventListener("click", function () {
-          openLightbox(index);
+      function buildGallery(config) {
+        gallery.innerHTML = "";
+
+        config.images.forEach(function (item, index) {
+          var figure = document.createElement("figure");
+          figure.className = "gallery-item";
+          figure.id = item.id;
+
+          var img = document.createElement("img");
+          img.src = item.src;
+          img.alt = "";
+          img.loading = "lazy";
+
+          img.addEventListener("click", function () {
+            openLightbox(index);
+          });
+
+          figure.appendChild(img);
+          gallery.appendChild(figure);
         });
-      });
+
+        images = Array.prototype.slice.call(
+          document.querySelectorAll(".gallery-item img")
+        );
+      }
 
       prevButton.addEventListener("click", function (event) {
         event.stopPropagation();
-        showImage(currentIndex - 1);
+        if (images.length) showImage(currentIndex - 1);
       });
 
       nextButton.addEventListener("click", function (event) {
         event.stopPropagation();
-        showImage(currentIndex + 1);
+        if (images.length) showImage(currentIndex + 1);
       });
 
       lightboxImage.addEventListener("click", function (event) {
@@ -291,14 +263,26 @@
 
         if (event.key === "Escape") {
           closeLightbox();
-        } else if (event.key === "ArrowLeft") {
+        } else if (event.key === "ArrowLeft" && images.length) {
           showImage(currentIndex - 1);
-        } else if (event.key === "ArrowRight") {
+        } else if (event.key === "ArrowRight" && images.length) {
           showImage(currentIndex + 1);
         }
       });
-    }());
-  </script>
 
+      fetch("gallery.json", { cache: "no-store" })
+        .then(function (response) {
+          if (!response.ok) {
+            throw new Error("HTTP " + response.status);
+          }
+          return response.json();
+        })
+        .then(buildGallery)
+        .catch(function (error) {
+          gallery.textContent = "Could not load gallery.";
+          console.error(error);
+        });
+    }());
+</script>
 </body>
 </html>
