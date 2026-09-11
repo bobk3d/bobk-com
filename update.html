@@ -177,6 +177,7 @@ input[type="file"] {
 Choose the image position you want to replace, then select the new image.
 </div>
 <div class="slot-grid" id="slotGrid"></div>
+<div id="selectionHint" style="text-align:center; font-size:1.15rem; font-weight:600; margin:24px 0;">Select an image above to edit.</div>
 <div id="formPanel">
 <div id="selectedSlot" style="font-weight:bold;"></div>
 <label for="currentFile">Current image</label>
@@ -229,6 +230,7 @@ let selectedIndex = -1;
 
 const slotGrid = document.getElementById("slotGrid");
 const formPanel = document.getElementById("formPanel");
+const selectionHint = document.getElementById("selectionHint");
 const selectedSlot = document.getElementById("selectedSlot");
 const currentFile = document.getElementById("currentFile");
 const currentPreview = document.getElementById("currentPreview");
@@ -286,6 +288,7 @@ function selectSlot(index) {
     newPreview.removeAttribute("src");
 
     status.style.display = "none";
+    selectionHint.style.display = "none";
     formPanel.style.display = "block";
     formPanel.scrollIntoView({ behavior: "smooth", block: "start" });
 }
