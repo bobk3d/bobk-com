@@ -63,10 +63,20 @@ button.lightbox-control:hover { color: #fff; }
 .lightbox-arrow {
   top: 50%;
   transform: translateY(-50%);
-  width: 28px;
-  height: 38px;
-  font-size: 1.35rem;
+  width: 26px;
+  height: 32px;
   line-height: 1;
+}
+.lightbox-arrow svg {
+  display: block;
+  width: 22px;
+  height: 22px;
+  margin: auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 .lightbox-prev { left: 10px; }
 .lightbox-next { right: 10px; }
@@ -90,7 +100,8 @@ button.lightbox-control:hover { color: #fff; }
 
 @media (max-width: 600px) {
   .lightbox { padding: 12px; }
-  .lightbox-arrow { width: 26px; height: 36px; font-size: 1.25rem; }
+  .lightbox-arrow { width: 24px; height: 30px; }
+  .lightbox-arrow svg { width: 20px; height: 20px; }
   .lightbox-prev { left: 4px; }
   .lightbox-next { right: 4px; }
   .lightbox-counter { top: 12px; left: 12px; font-size: .85rem; }
@@ -108,9 +119,13 @@ button.lightbox-control:hover { color: #fff; }
 
 <div aria-hidden="true" class="lightbox" id="lightbox">
   <div class="lightbox-control lightbox-counter" id="lightboxCounter">1 / 15</div>
-  <button aria-label="Previous image" class="lightbox-control lightbox-arrow lightbox-prev" id="lightboxPrev">←</button>
+  <button aria-label="Previous image" class="lightbox-control lightbox-arrow lightbox-prev" id="lightboxPrev">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 5 L7 12 L14 19 M7 12 H17"/></svg>
+  </button>
   <img alt="" id="lightboxImage" src="">
-  <button aria-label="Next image" class="lightbox-control lightbox-arrow lightbox-next" id="lightboxNext">→</button>
+  <button aria-label="Next image" class="lightbox-control lightbox-arrow lightbox-next" id="lightboxNext">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5 L17 12 L10 19 M7 12 H17"/></svg>
+  </button>
   <button aria-label="Fullscreen" class="lightbox-control lightbox-fullscreen" id="lightboxFullscreen">⛶</button>
   <button aria-label="Close" class="lightbox-control lightbox-close" id="lightboxClose">×</button>
 </div>
@@ -134,7 +149,7 @@ button.lightbox-control:hover { color: #fff; }
     clearTimeout(controlsTimer);
     controlsTimer = setTimeout(function () {
       lightbox.classList.remove("controls-visible");
-    }, 1400);
+    }, 700);
   }
 
   function showImage(index) {
