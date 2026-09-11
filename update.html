@@ -93,6 +93,52 @@ input[type="file"] {
     background: #ddd;
     border: 1px solid #bbb;
 }
+
+.existing-picker {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    max-width: 680px;
+    max-height: 520px;
+    overflow-y: auto;
+    padding: 8px;
+    border: 1px solid #bbb;
+    background: #fafafa;
+    box-sizing: border-box;
+}
+.existing-choice {
+    border: 1px solid #bbb;
+    background: #fff;
+    padding: 6px;
+    cursor: pointer;
+    text-align: left;
+    font: inherit;
+    min-width: 0;
+}
+.existing-choice:hover {
+    background: #f0f0f0;
+}
+.existing-choice.selected {
+    outline: 3px solid #555;
+}
+.existing-choice img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    background: #ddd;
+}
+.existing-choice-name {
+    margin-top: 5px;
+    font-size: 0.78em;
+    color: #444;
+    overflow-wrap: anywhere;
+}
+.picker-message {
+    grid-column: 1 / -1;
+    padding: 10px;
+    color: #555;
+}
 #submitButton {
     margin-top: 20px;
     padding: 8px 16px;
@@ -108,6 +154,9 @@ input[type="file"] {
     .slot-grid {
         grid-template-columns: repeat(2, 1fr);
     }
+    .existing-picker {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
 }
 @media (max-width: 440px) {
     body {
@@ -115,6 +164,9 @@ input[type="file"] {
     }
     .slot-grid {
         grid-template-columns: 1fr;
+    }
+    .existing-picker {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 </style>
@@ -147,12 +199,13 @@ Choose the image position you want to replace, then select the new image.
 <input accept="image/jpeg,image/png,image/webp" id="newImage" type="file"/>
 </div>
 <div id="existingPanel" style="display:none;">
-<label for="existingImage">Existing image</label>
-<select id="existingImage" style="width:100%;max-width:680px;padding:7px;">
-<option value="">Loading image list...</option>
-</select>
+<label>Existing image</label>
+<input id="existingImage" type="hidden" value=""/>
+<div class="existing-picker" id="existingPicker">
+  <div class="picker-message">Loading image list...</div>
+</div>
 <div class="note" style="margin-top:6px;margin-bottom:0;">
-    Once connected, this list will come from the repo's images/ folder.
+    Click an image to select it. Images shown here come from the repo's images/ folder.
   </div>
 </div>
 <div class="preview-row">
@@ -169,7 +222,6 @@ Choose the image position you want to replace, then select the new image.
 <div id="status"></div>
 </div>
 <script>
-// We will replace this with the real Worker address once the Worker is created.
 const workerUrl = "https://gallery-api.bobk.com";
 
 let galleryData = null;
@@ -183,6 +235,7 @@ const currentPreview = document.getElementById("currentPreview");
 const titleField = document.getElementById("titleField");
 const newImage = document.getElementById("newImage");
 const existingImage = document.getElementById("existingImage");
+const existingPicker = document.getElementById("existingPicker");
 const uploadPanel = document.getElementById("uploadPanel");
 const existingPanel = document.getElementById("existingPanel");
 const newPreview = document.getElementById("newPreview");
@@ -227,6 +280,9 @@ function selectSlot(index) {
 
     newImage.value = "";
     existingImage.value = "";
+    document.querySelectorAll(".existing-choice").forEach(function(choice) {
+        choice.classList.remove("selected");
+    });
     newPreview.removeAttribute("src");
 
     status.style.display = "none";
@@ -265,7 +321,7 @@ function buildSlots(config) {
 
 
 async function loadExistingImages() {
-    existingImage.innerHTML = '<option value="">Loading image list...</option>';
+    existingPicker.innerHTML = '<div class="picker-message">Loading image list...</div>';
 
     try {
         const response = await fetch(workerUrl, {
@@ -279,23 +335,49 @@ async function loadExistingImages() {
             throw new Error(data.error || ("HTTP " + response.status));
         }
 
-        existingImage.innerHTML =
-            '<option value="">Select an existing image...</option>';
+        existingPicker.innerHTML = "";
 
         data.images.forEach(function(item) {
-            const option = document.createElement("option");
-            option.value = item.path;
-            option.textContent = item.name;
-            existingImage.appendChild(option);
+            const choice = document.createElement("button");
+            choice.type = "button";
+            choice.className = "existing-choice";
+            choice.dataset.path = item.path;
+
+            const img = document.createElement("img");
+            img.src = item.path;
+            img.alt = item.name;
+            img.loading = "lazy";
+
+            const name = document.createElement("div");
+            name.className = "existing-choice-name";
+            name.textContent = item.name;
+
+            choice.appendChild(img);
+            choice.appendChild(name);
+
+            choice.addEventListener("click", function() {
+                existingImage.value = item.path;
+
+                document.querySelectorAll(".existing-choice").forEach(function(other) {
+                    other.classList.toggle("selected", other === choice);
+                });
+
+                setReplacementPreview();
+            });
+
+            existingPicker.appendChild(choice);
         });
 
-    } catch (error) {
-        existingImage.innerHTML =
-            '<option value="">Could not load image list</option>';
+        if (!data.images.length) {
+            existingPicker.innerHTML = '<div class="picker-message">No images found.</div>';
+        }
 
+    } catch (error) {
+        existingPicker.innerHTML = '<div class="picker-message">Could not load image list.</div>';
         console.error(error);
     }
 }
+
 
 sourceModes.forEach(function(radio) {
     radio.addEventListener("change", function() {
@@ -307,7 +389,6 @@ sourceModes.forEach(function(radio) {
 });
 
 newImage.addEventListener("change", setReplacementPreview);
-existingImage.addEventListener("change", setReplacementPreview);
 
 submitButton.addEventListener("click", async function() {
     if (selectedIndex < 0) return;
